@@ -1,16 +1,13 @@
 'use client'
 import React, { useState } from 'react';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+
+import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie';
 
 type Props = {};
 
 export default function LoginForm({}: Props) {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -22,21 +19,29 @@ export default function LoginForm({}: Props) {
     }
   };
 
+ 
+
   const handleLogin  = async () => {
     try {
 
+      
       const formData = new FormData();
       formData.append('email', email);
-      formData.append('password', password);
-
-      const response = await fetch('http://localhost:5000/users/signin', {
+      formData.append('password', password);  
+      const response:any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/signin`, {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
         // Successful login logic
-        console.log('Login successful');
+        const data= await response.json();
+        console.log('Login successful',data);
+        const {token} = data.data;
+        console.log("🚀 ~ file: LoginForm.tsx:41 ~ handleLogin ~ token:", token)
+        
+        Cookies.set('jwtToken', token, { httpOnly: true });
+        router.push('/dashboard');
       } else {
         // Handle error scenarios
         console.error('Login failed');
