@@ -1,5 +1,12 @@
 'use client'
 import React, { useState } from 'react';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 type Props = {};
 
@@ -15,12 +22,42 @@ export default function LoginForm({}: Props) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin  = async () => {
+    try {
+
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+
+      const response = await fetch('http://localhost:5000/users/signin', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Successful login logic
+        console.log('Login successful');
+      } else {
+        // Handle error scenarios
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  }
+
+  const handleSubmit =  (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the default form submission
 
     // Add your login logic here using 'email' and 'password'
     console.log('Email:', email);
     console.log('Password:', password);
+    if(email && password){
+      handleLogin();
+    }
+  
+
+
   };
 
   const inputStyle = "w-[100%] h-[40px] bg-white border-2 border-gray-300 rounded-md my-2 p-2";
