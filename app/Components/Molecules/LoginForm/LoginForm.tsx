@@ -20,36 +20,38 @@ export default function LoginForm({}: Props) {
   };
 
  
-
-  const handleLogin  = async () => {
+  const handleLogin = async () => {
     try {
-
-      
       const formData = new FormData();
       formData.append('email', email);
-      formData.append('password', password);  
-      const response:any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/signin`, {
+      formData.append('password', password);
+  
+      const response: any = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/signin`, {
         method: 'POST',
         body: formData,
       });
-
+  
+      console.log('Response status:', response.status);
+  
       if (response.ok) {
-        // Successful login logic
-        const data= await response.json();
-        console.log('Login successful',data);
-        const {token} = data.data;
-        console.log("🚀 ~ file: LoginForm.tsx:41 ~ handleLogin ~ token:", token)
-        
-        Cookies.set('jwtToken', token, { httpOnly: true });
+        const data = await response.json();
+        console.log('Login successful', data);
+  
+        const { token } = data.data;
+        console.log('Token:', token);
+  
+        Cookies.set('jwtToken', token, { httpOnly: false });
+        console.log('Cookie set successfully');
+  
         router.push('/dashboard');
       } else {
-        // Handle error scenarios
         console.error('Login failed');
       }
     } catch (error) {
       console.error('Error during login:', error);
     }
-  }
+  };
+  
 
   const handleSubmit =  (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the default form submission
